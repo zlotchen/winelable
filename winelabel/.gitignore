@@ -1,0 +1,20 @@
+# Model binaries
+models/
+
+# Image files in data
+#data/**/*.jpg
+#data/**/*.jpeg
+#data/**/*.png
+
+# Swap files
+*.swp
+	
+# Try scripts
+*.py
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Claude settings
+.claude/
