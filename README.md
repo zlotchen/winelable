@@ -96,6 +96,51 @@ Expected output:
 
 Open a browser and navigate to **http://localhost:8080**.
 
+### One-command startup with public URL (ngrok)
+
+`start.sh` launches both servers and an ngrok HTTPS tunnel in a single command. Requires a free ngrok account.
+
+**One-time ngrok setup:**
+
+```bash
+# 1. Get your free authtoken from https://dashboard.ngrok.com/get-started/your-authtoken
+ngrok config add-authtoken <your-token>
+```
+
+**Start everything:**
+
+```bash
+./start.sh          # dev environment (default)
+./start.sh stage    # stage environment
+```
+
+The script will:
+1. Start `model_server.py` and wait for the model to finish loading
+2. Start `server.py`
+3. Open an ngrok HTTPS tunnel on port 8080
+4. Print the public URL in the terminal
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  TTB COLA Label Review is running                            │
+├──────────────────────────────────────────────────────────────┤
+│  Public URL  : https://abc123.ngrok-free.app                 │
+│  Local URL   : http://localhost:8080                         │
+│  Environment : dev                                           │
+│  ngrok UI    : http://localhost:4040                         │
+├──────────────────────────────────────────────────────────────┤
+│  Logs        : logs/model_server.log                         │
+│                logs/server.log                               │
+│                logs/ngrok.log                                │
+├──────────────────────────────────────────────────────────────┤
+│  Press Ctrl+C to stop all processes                          │
+└──────────────────────────────────────────────────────────────┘
+```
+
+Press **Ctrl+C** to cleanly shut down all three processes.
+
+> **Note:** The free ngrok tier provides one persistent tunnel with a randomly assigned URL that remains stable as long as the process is running. Restarting ngrok assigns a new URL unless you have a paid plan with a reserved domain.
+
 ### Switching Environments
 
 ```bash

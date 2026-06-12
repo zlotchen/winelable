@@ -27,5 +27,8 @@ data/pillow_try.py
 __pycache__/
 *.pyc
 
+# Runtime logs
+logs/
+
 # Claude settings
 .claude/
