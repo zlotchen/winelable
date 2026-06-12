@@ -6,8 +6,8 @@ NOTE: The specification listed port 990099, which exceeds the maximum valid TCP 
 (65535). This implementation uses port 9009 as the nearest valid interpretation.
 
 Usage:
-    python model_server.py            # uses TTB_ENV (default: dev)
-    TTB_ENV=stage python model_server.py
+    python src/model_server.py            # uses TTB_ENV (default: dev)
+    TTB_ENV=stage python src/model_server.py
 
 GET /?file_path=<path>&file_type=<IMG|TXT>
     file_path  : relative path from project root; comma-separated for multiple files
@@ -31,7 +31,7 @@ _model_cfg = _cfg.get("model", {})
 
 HOST = _ms_cfg.get("host", "localhost")
 PORT = _ms_cfg.get("port", 9009)
-WORK_DIR = Path(__file__).parent
+WORK_DIR = Path(__file__).parent.parent
 MODELS_DIR = WORK_DIR / _model_cfg.get("models_dir", "models")
 MODEL_NAME = _model_cfg.get("name", "SmolVLM-500M-Instruct")
 MAX_NEW_TOKENS = _model_cfg.get("max_new_tokens", 512)

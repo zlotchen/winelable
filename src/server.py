@@ -3,10 +3,10 @@ TTB Label Review — Main Application Server
 Serves the frontend and exposes the review API.
 
 Usage:
-    python server.py               # dev environment
-    TTB_ENV=stage python server.py
+    python src/server.py               # dev environment
+    TTB_ENV=stage python src/server.py
 
-Requires model_server.py to be running separately on the configured port (default 9009).
+Requires src/model_server.py to be running separately on the configured port (default 9009).
 """
 
 import json
@@ -29,7 +29,7 @@ _data_cfg = _cfg.get("data", {})
 _ms_cfg = _cfg.get("model_server", {})
 _sub_cfg = _cfg.get("submissions", {})
 
-WORK_DIR = Path(__file__).parent
+WORK_DIR = Path(__file__).parent.parent
 FRONTEND_DIR = WORK_DIR / "frontend"
 DATA_DIR = WORK_DIR / "data"
 INPUT_DIR = DATA_DIR / "input"
