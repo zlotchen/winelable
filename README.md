@@ -96,6 +96,9 @@ Expected output:
 
 Open a browser and navigate to **http://localhost:8080**.
 
+## WARNING: Do not use start.sh in local environment without ngrok. 
+## Run: https://overcast-approach-tyke.ngrok-free.dev/ and then click "Visit Site" to access this application remotely.
+
 ### One-command startup with public URL (ngrok)
 
 `start.sh` launches both servers and an ngrok HTTPS tunnel in a single command. Requires a free ngrok account.
@@ -107,7 +110,7 @@ Open a browser and navigate to **http://localhost:8080**.
 ngrok config add-authtoken <your-token>
 ```
 
-**Start everything:**
+**Start Everything:**
 
 ```bash
 ./start.sh          # dev environment (default)
