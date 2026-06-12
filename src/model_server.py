@@ -2,8 +2,7 @@
 TTB Label Review — Model Inference Server
 Loads SmolVLM-500M-Instruct locally and serves GET requests for image analysis.
 
-NOTE: The specification listed port 990099, which exceeds the maximum valid TCP port
-(65535). This implementation uses port 9009 as the nearest valid interpretation.
+NOTE: This implementation uses port 9009.
 
 Usage:
     python src/model_server.py            # uses TTB_ENV (default: dev)
@@ -59,7 +58,9 @@ def load_model():
     global _model, _processor
     model_path = MODELS_DIR / MODEL_NAME
 
-    from transformers import AutoProcessor, AutoModelForVision2Seq
+    from transformers import AutoProcessor, AutoModelForImageTextToText
+    from transformers.image_utils import load_image
+    #from transformers import AutoProcessor, AutoModelForVision2Seq
     import torch
 
     print(f"[model_server] Loading {MODEL_NAME} from {model_path} ...")
@@ -67,7 +68,7 @@ def load_model():
 
     device = _model_cfg.get("device", "cpu")
     dtype = torch.float16 if device == "cuda" else torch.float32
-    _model = AutoModelForVision2Seq.from_pretrained(
+    _model = AutoModelForImageTextToText.from_pretrained(
         str(model_path),
         local_files_only=True,
         torch_dtype=dtype,
@@ -181,7 +182,16 @@ def run():
     server = ThreadingHTTPServer((HOST, PORT), ModelHandler)
     server.request_queue_size = 10  # medium throughput queue depth
     print(f"[model_server] Inference server at http://{HOST}:{PORT}")
-    print(f"[model_server] Example: http://{HOST}:{PORT}/?file_path=data/input/20260612/vendorid_111/01/label.jpg&file_type=IMG")
+    print(f"[model_server] Example: http://{HOST}:{PORT}/?file_path=data/input/20260612/vendorid_111/01/1000021258.jpg&file_type=IMG")
+    # Expected JSON output shape:
+    # {
+    #     "name": "Chateau Mattereur",
+    #     "vintage": "2022",
+    #     "producer": "Bordeaux Superieur",
+    #     "alcohol_content": "46.0%",
+    #     "volume": "750 ml",
+    #     "country_of_origin": "France"
+    # }
     try:
         server.serve_forever()
     except KeyboardInterrupt:

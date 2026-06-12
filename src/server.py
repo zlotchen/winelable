@@ -16,8 +16,9 @@ import re
 import shutil
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, unquote
 
@@ -25,22 +26,30 @@ import config as cfg
 
 _cfg = cfg.load()
 _server_cfg = _cfg.get("server", {})
-_data_cfg = _cfg.get("data", {})
-_ms_cfg = _cfg.get("model_server", {})
-_sub_cfg = _cfg.get("submissions", {})
+_data_cfg   = _cfg.get("data", {})
+_ms_cfg     = _cfg.get("model_server", {})
+_sub_cfg    = _cfg.get("submissions", {})
+_pool_cfg   = _cfg.get("thread_pool", {})
 
-WORK_DIR = Path(__file__).parent.parent
-FRONTEND_DIR = WORK_DIR / "frontend"
-DATA_DIR = WORK_DIR / "data"
-INPUT_DIR = DATA_DIR / "input"
+WORK_DIR      = Path(__file__).parent.parent
+FRONTEND_DIR  = WORK_DIR / "frontend"
+DATA_DIR      = WORK_DIR / "data"
+INPUT_DIR     = DATA_DIR / "input"
 PROCESSED_DIR = DATA_DIR / "processed"
-QUARANTINE_DIR = DATA_DIR / "quaranteen"
+QUARANTINE_DIR= DATA_DIR / "quaranteen"
 STATUSES_FILE = WORK_DIR / "conf" / "statuses.json"
 
-HOST = _server_cfg.get("host", "localhost")
-PORT = _server_cfg.get("port", 8080)
-MODEL_SERVER_HOST = _ms_cfg.get("host", "localhost")
-MODEL_SERVER_PORT = _ms_cfg.get("port", 9009)
+HOST       = _server_cfg.get("host", "localhost")
+PORT       = _server_cfg.get("port", 8080)
+
+MODEL_SERVER_HOST    = _ms_cfg.get("host", "localhost")
+MODEL_SERVER_PORT    = _ms_cfg.get("port", 9009)
+# timeout_ms must be >= 600 000 ms (10 min) to accommodate model inference
+MODEL_SERVER_TIMEOUT = max(_ms_cfg.get("timeout_ms", 600_000), 600_000) / 1000  # convert to seconds
+
+THREAD_MIN = _pool_cfg.get("min_workers", 2)   # always-warm threads
+THREAD_MAX = _pool_cfg.get("max_workers", 8)   # hard ceiling on concurrency
+
 DEFAULT_LIMIT = _sub_cfg.get("default_limit", 10)
 
 FOLDER_TYPE_MAP = {
@@ -146,7 +155,7 @@ def call_model_server(file_paths: list, file_type: str) -> dict:
         f"file_path={urllib.parse.quote(joined)}&file_type={file_type}"
     )
     try:
-        with urllib.request.urlopen(url, timeout=120) as resp:
+        with urllib.request.urlopen(url, timeout=MODEL_SERVER_TIMEOUT) as resp:
             return json.loads(resp.read())
     except Exception as exc:
         return {"error": f"Model server unreachable: {exc}"}
@@ -164,11 +173,44 @@ def move_submission(folder_path: str, target_type: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Thread-pool HTTP server
+# Bounded between THREAD_MIN (warm) and THREAD_MAX (hard ceiling) workers.
+# ---------------------------------------------------------------------------
+
+class ThreadPoolHTTPServer(HTTPServer):
+    """HTTPServer that dispatches each request to a bounded ThreadPoolExecutor."""
+
+    def __init__(self, server_address, RequestHandlerClass,
+                 min_workers: int = 2, max_workers: int = 8):
+        super().__init__(server_address, RequestHandlerClass)
+        # Pre-start min_workers by submitting no-op futures so the pool
+        # initialises the minimum thread count immediately.
+        self._pool = ThreadPoolExecutor(max_workers=max_workers)
+        for _ in range(min_workers):
+            self._pool.submit(lambda: None)
+
+    def process_request(self, request, client_address):
+        self._pool.submit(self._handle, request, client_address)
+
+    def _handle(self, request, client_address):
+        try:
+            self.finish_request(request, client_address)
+        except Exception:
+            self.handle_error(request, client_address)
+        finally:
+            self.shutdown_request(request)
+
+    def server_close(self):
+        self._pool.shutdown(wait=False)
+        super().server_close()
+
+
+# ---------------------------------------------------------------------------
 # HTTP handler
 # ---------------------------------------------------------------------------
 
 class TTBHandler(BaseHTTPRequestHandler):
-    timeout = 60  # medium throughput timeout
+    timeout = 60
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -379,11 +421,16 @@ class TTBHandler(BaseHTTPRequestHandler):
 # ---------------------------------------------------------------------------
 
 def run():
-    server = ThreadingHTTPServer((HOST, PORT), TTBHandler)
-    server.request_queue_size = 10
+    server = ThreadPoolHTTPServer(
+        (HOST, PORT), TTBHandler,
+        min_workers=THREAD_MIN,
+        max_workers=THREAD_MAX,
+    )
+    server.request_queue_size = THREAD_MAX
     print(f"[server] TTB Label Review at http://{HOST}:{PORT}")
-    print(f"[server] Environment: {_cfg.get('environment', 'dev')}")
-    print(f"[server] Model server expected at http://{MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}")
+    print(f"[server] Environment     : {_cfg.get('environment', 'dev')}")
+    print(f"[server] Thread pool     : min={THREAD_MIN}  max={THREAD_MAX}")
+    print(f"[server] Model server    : http://{MODEL_SERVER_HOST}:{MODEL_SERVER_PORT}  timeout={MODEL_SERVER_TIMEOUT:.0f}s")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

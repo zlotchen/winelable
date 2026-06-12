@@ -7,7 +7,12 @@
   },
   "model_server": {
     "host": "localhost",
-    "port": 9009
+    "port": 9009,
+    "timeout_ms": 600000
+  },
+  "thread_pool": {
+    "min_workers": 2,
+    "max_workers": 8
   },
   "model": {
     "name": "SmolVLM-500M-Instruct",
