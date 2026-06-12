@@ -4,6 +4,23 @@ A proof-of-concept application for reviewing wine and alcohol product label subm
 
 ---
 
+## Assumptions
+
+### Submission Files
+
+- Each submission consists of a set of files — one or two label images and a PDF text file — uploaded by a separate upstream application into a dedicated folder. One folder per submission.
+- File validation (size limits, allowed file types, and binary safety scanning) is assumed to have been performed by the upstream upload process **before** files are placed into the input folders. Files that fail validation are routed to the Quarantine or Invalid buckets by that upstream process and are not the responsibility of this application.
+- Each submission folder contains a system-generated metadata file (`application.json`) with the fields `TTB_ID`, `status`, `vendor_code`, and `date_submission`. These fields are trusted as accurate and do not require re-validation by this application.
+
+### Permissions
+
+- This application has **read** access to all files within input, processed, and quarantine folders, and **write** access limited to the `application.json` metadata file within each submission folder.
+- When a **Save** action is performed, the application appends or updates only the `application.json` metadata file with the new field values and an automatically generated `date_reviewed` timestamp. All updated metadata fields, including `status`, are written in JSON format to that file.
+- The application is authorised to **move** an entire submission folder (all contained files) from the input folder tree to either the processed or quarantine bucket when the corresponding status action is taken.
+- Read, write, and list access to the folder buckets is intended to be limited to authorised roles in production. **Security hardening and session token issuance are explicitly out of scope for this initial proof-of-concept**, per stakeholder agreement.
+
+---
+
 ## Project Structure
 
 ```
