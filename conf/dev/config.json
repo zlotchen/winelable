@@ -1,0 +1,22 @@
+{
+  "environment": "dev",
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "debug": true
+  },
+  "model": {
+    "name": "SmolVLM-500M-Instruct",
+    "models_dir": "models",
+    "device": "cpu"
+  },
+  "data": {
+    "input_dir": "data/input",
+    "processed_dir": "data/processed",
+    "quarantine_dir": "data/quaranteen"
+  },
+  "logging": {
+    "level": "DEBUG",
+    "file": "logs/dev.log"
+  }
+}

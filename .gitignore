@@ -13,8 +13,10 @@ models/*/*
 # Swap files
 *.swp
 	
-# Try scripts
-*.py
+# Scratch/try scripts
+try*.py
+test*.py
+data/pillow_try.py
 
 # Python cache
 __pycache__/

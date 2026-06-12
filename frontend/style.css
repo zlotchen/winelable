@@ -1,0 +1,101 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+}
+
+header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+
+header h1 { font-size: 1.4rem; letter-spacing: 0.05em; }
+
+main {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 { font-size: 1rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Submissions list */
+#submissions-panel {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  align-self: start;
+}
+
+.submission-card {
+  border: 1px solid #e0e4ed;
+  border-radius: 6px;
+  padding: .75rem;
+  margin-bottom: .75rem;
+  cursor: pointer;
+  transition: background .15s;
+}
+.submission-card:hover { background: #f0f4ff; }
+.submission-card .ttb-id { font-size: .75rem; color: #666; }
+.submission-card .vendor  { font-weight: 600; }
+.submission-card .status  { font-size: .75rem; padding: 2px 6px; border-radius: 4px; background: #e8f5e9; color: #2e7d32; }
+.submission-card.status-new .status { background: #e3f2fd; color: #1565c0; }
+
+/* Review panel */
+#review-panel {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
+#label-images {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+#label-images img {
+  max-height: 280px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+#application-meta {
+  font-size: .85rem;
+  color: #444;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+#run-review-btn {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  padding: .6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .9rem;
+}
+#run-review-btn:hover { background: #2e2e50; }
+#run-review-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+#review-result {
+  margin-top: 1rem;
+  background: #f8faff;
+  border: 1px solid #c5d0e6;
+  border-radius: 6px;
+  padding: 1rem;
+  white-space: pre-wrap;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.hidden { display: none !important; }

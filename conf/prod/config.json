@@ -1,0 +1,22 @@
+{
+  "environment": "prod",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 80,
+    "debug": false
+  },
+  "model": {
+    "name": "SmolVLM-Instruct",
+    "models_dir": "models",
+    "device": "cuda"
+  },
+  "data": {
+    "input_dir": "data/input",
+    "processed_dir": "data/processed",
+    "quarantine_dir": "data/quaranteen"
+  },
+  "logging": {
+    "level": "WARNING",
+    "file": "logs/prod.log"
+  }
+}
