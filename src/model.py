@@ -9,7 +9,7 @@ from pathlib import Path
 import config as cfg
 
 _model_cfg = cfg.get("model", {})
-MODELS_DIR = Path(__file__).parent / _model_cfg.get("models_dir", "models")
+MODELS_DIR = Path(__file__).parent.parent / _model_cfg.get("models_dir", "models")
 DEFAULT_MODEL = _model_cfg.get("name", "SmolVLM-500M-Instruct")
 
 

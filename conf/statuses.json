@@ -1,0 +1,9 @@
+{
+  "statuses": [
+    { "value": "new",         "label": "New"         },
+    { "value": "reviewed",    "label": "Reviewed"    },
+    { "value": "processed",   "label": "Processed"   },
+    { "value": "quarantine",  "label": "Quarantined" },
+    { "value": "error",       "label": "Error"       }
+  ]
+}

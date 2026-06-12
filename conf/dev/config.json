@@ -5,15 +5,28 @@
     "port": 8080,
     "debug": true
   },
+  "model_server": {
+    "host": "localhost",
+    "port": 9009,
+    "timeout_ms": 600000
+  },
+  "thread_pool": {
+    "min_workers": 2,
+    "max_workers": 8
+  },
   "model": {
     "name": "SmolVLM-500M-Instruct",
     "models_dir": "models",
-    "device": "cpu"
+    "device": "cpu",
+    "max_new_tokens": 512
   },
   "data": {
     "input_dir": "data/input",
     "processed_dir": "data/processed",
     "quarantine_dir": "data/quaranteen"
+  },
+  "submissions": {
+    "default_limit": 10
   },
   "logging": {
     "level": "DEBUG",

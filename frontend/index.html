@@ -1,31 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TTB Label Review</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTB COLA Label Review</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>TTB COLA Label Review</h1>
-  </header>
 
-  <main>
-    <section id="submissions-panel">
-      <h2>Pending Submissions</h2>
-      <div id="submissions-list">Loading...</div>
-    </section>
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      <span class="header-badge">TTB</span>
+      <h1>COLA Label Review</h1>
+    </div>
+    <div id="env-badge"></div>
+  </div>
+</header>
 
-    <section id="review-panel" class="hidden">
-      <h2>Label Review</h2>
-      <div id="label-images"></div>
-      <div id="application-meta"></div>
-      <button id="run-review-btn">Run AI Review</button>
-      <div id="review-result" class="hidden"></div>
-    </section>
-  </main>
+<div id="app">
 
-  <script src="app.js"></script>
+  <!-- Category tabs -->
+  <nav id="tabs">
+    <button class="tab active" data-folder="input">
+      Unprocessed <span class="tab-count" id="count-input">—</span>
+    </button>
+    <button class="tab" data-folder="processed">
+      Processed <span class="tab-count" id="count-processed">—</span>
+    </button>
+    <button class="tab" data-folder="quaranteen">
+      Quarantined <span class="tab-count" id="count-quaranteen">—</span>
+    </button>
+  </nav>
+
+  <!-- Filter bar -->
+  <section id="filter-bar">
+    <div class="filter-group">
+      <label>From <input type="date" id="filter-date-from"></label>
+      <label>To <input type="date" id="filter-date-to"></label>
+    </div>
+    <div class="filter-group">
+      <label>Vendor ID <input type="text" id="filter-vendor" placeholder="e.g. 111"></label>
+      <label>Status
+        <select id="filter-status"><option value="">All</option></select>
+      </label>
+    </div>
+    <div class="filter-actions">
+      <button id="btn-apply-filter" class="btn btn-secondary">Apply</button>
+      <button id="btn-clear-filter" class="btn btn-ghost">Clear</button>
+    </div>
+  </section>
+
+  <!-- Main two-column layout -->
+  <div id="main-layout">
+
+    <!-- Left: list panel -->
+    <aside id="list-panel">
+      <div id="list-toolbar">
+        <label class="cb-label">
+          <input type="checkbox" id="select-all">
+          <span>Select all</span>
+        </label>
+        <span id="selected-count" class="muted">0 selected</span>
+      </div>
+
+      <div id="submissions-list">
+        <div class="loading-msg">Loading submissions…</div>
+      </div>
+
+      <!-- Batch actions -->
+      <div id="batch-bar">
+        <span class="batch-label">Batch:</span>
+        <button id="btn-batch-process" class="btn btn-sm btn-primary">Process</button>
+        <button id="btn-batch-quarantine" class="btn btn-sm btn-danger">Quarantine</button>
+        <div class="batch-status-row">
+          <select id="batch-status-select" class="select-sm"></select>
+          <button id="btn-batch-change-status" class="btn btn-sm btn-secondary">Set Status</button>
+        </div>
+        <button id="btn-batch-save" class="btn btn-sm btn-secondary">Save</button>
+      </div>
+    </aside>
+
+    <!-- Right: detail panel -->
+    <main id="detail-panel">
+      <div id="detail-placeholder">
+        <div class="placeholder-icon">🗂</div>
+        <p>Select a submission from the list to review</p>
+      </div>
+
+      <div id="detail-content" class="hidden">
+
+        <!-- Image viewer -->
+        <section id="image-viewer">
+          <h2 class="section-title">Label Images</h2>
+          <div id="image-strip"></div>
+        </section>
+
+        <!-- Metadata comparison table -->
+        <section id="metadata-section">
+          <h2 class="section-title">
+            Metadata Comparison
+            <span id="extract-status" class="extract-badge"></span>
+          </h2>
+          <div class="table-scroll">
+            <table id="metadata-table">
+              <thead>
+                <tr>
+                  <th class="col-field">Field</th>
+                  <th class="col-submitted">Submitted Metadata</th>
+                  <th class="col-extracted">Extracted Metadata</th>
+                </tr>
+              </thead>
+              <tbody id="metadata-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Detail actions -->
+        <section id="detail-actions">
+          <label class="action-label">Status:
+            <select id="detail-status-select"></select>
+          </label>
+          <div class="action-buttons">
+            <button id="btn-detail-save" class="btn btn-primary">Save</button>
+            <button id="btn-detail-process" class="btn btn-success">Mark Processed</button>
+            <button id="btn-detail-quarantine" class="btn btn-danger">Quarantine</button>
+          </div>
+        </section>
+
+      </div><!-- /detail-content -->
+    </main>
+
+  </div><!-- /main-layout -->
+</div><!-- /app -->
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="hidden">
+  <button id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

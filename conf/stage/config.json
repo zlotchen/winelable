@@ -5,15 +5,28 @@
     "port": 8080,
     "debug": false
   },
+  "model_server": {
+    "host": "localhost",
+    "port": 9009,
+    "timeout_ms": 600000
+  },
+  "thread_pool": {
+    "min_workers": 4,
+    "max_workers": 20
+  },
   "model": {
     "name": "SmolVLM-Instruct",
     "models_dir": "models",
-    "device": "cuda"
+    "device": "cuda",
+    "max_new_tokens": 512
   },
   "data": {
     "input_dir": "data/input",
     "processed_dir": "data/processed",
     "quarantine_dir": "data/quaranteen"
+  },
+  "submissions": {
+    "default_limit": 10
   },
   "logging": {
     "level": "INFO",

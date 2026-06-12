@@ -7,7 +7,7 @@ import json
 import os
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).parent.parent
 ENV = os.environ.get("TTB_ENV", "dev")
 _config: dict = None
 
